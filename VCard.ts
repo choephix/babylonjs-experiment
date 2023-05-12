@@ -25,7 +25,7 @@ export class VCard {
 
       const layer = BABYLON.MeshBuilder.CreatePlane(
         name,
-        { width: 1, height: 1.4 },
+        { width: 1, height: 1 },
         scene
       );
       layer.material = layerMaterial;
@@ -42,6 +42,14 @@ export class VCard {
       if (backside) {
         layer.rotation.y = Math.PI;
       }
+
+      layerTexture.onLoadObservable.addOnce(
+        (eventData) => {
+          const layerTextureSize = layerTexture.getSize();
+          layer.scaling.x = layerTextureSize.width / 500;
+          layer.scaling.y = layerTextureSize.height / 500;
+        }
+      )
 
       return layer;
     };
