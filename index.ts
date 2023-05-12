@@ -14,13 +14,32 @@ const createScene = () => {
     'camera',
     -Math.PI / 2,
     Math.PI / 2,
-    5,
+    8,
     BABYLON.Vector3.Zero(),
     scene
   );
   camera.attachControl(canvas, true);
 
-  //const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+  const MAX_POSITION_RAND = 3.5;
+
+  for (let i = 0; i < 10; i++) {
+    const variant = Math.floor(Math.random() * 500);
+    const card = new VCard(scene, variant);
+
+    // Assign random position
+    const posX = Math.random() * 2 * MAX_POSITION_RAND - MAX_POSITION_RAND; // random number between -5 and 5
+    const posY = Math.random() * 2 * MAX_POSITION_RAND - MAX_POSITION_RAND; // random number between -5 and 5
+    const posZ = Math.random() * 2 * MAX_POSITION_RAND; // random number between -5 and 5
+    card.mesh.position.set(posX, posY, posZ);
+
+    // Assign random size
+    // const size = Math.random() * 0.75 + 0.25; // random number between 0.25 and 1
+    // card.mesh.scaling.set(size, size, size);
+
+    //card.mesh.scaling.set(.5,.5,.5);
+
+    //card.mesh.rotation.y = Math.PI * Math.random();
+  }
 
   const card = new VCard(scene);
 
@@ -30,7 +49,11 @@ const createScene = () => {
 const scene = createScene();
 
 engine.runRenderLoop(() => {
-  scene.getMeshByName('card').rotation.y += 0.01;
+  scene.meshes.forEach(mesh => {
+    if (mesh.name.startsWith('card')) {
+      mesh.rotation.y += 0.01;
+    }
+  });
   scene.render();
 });
 
