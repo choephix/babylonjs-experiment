@@ -159,7 +159,7 @@ const layerOptions2 = {
   },
   bigFx: {
     additive: true,
-    textureURL: 'https://public.cx/drimgar-poc/board/boardbg02.webp',
-    scale: 2,
+    textureURL: 'https://undroop-assets.web.app/davinci/toc-nebula/oc.png',
+    scale: 1,
   },
 };
