@@ -1,0 +1,10 @@
+{
+  "name": "typescript",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@babylonjs/core": "^6.0.0",
+    "babylonjs": "^6.3.0",
+    "babylonjs-loaders": "^6.3.0"
+  }
+}
