@@ -4,7 +4,7 @@ export class VCard {
   mesh: BABYLON.Mesh;
 
   constructor(private readonly scene: BABYLON.Scene, variant: number = 13) {
-    this.mesh = new BABYLON.Mesh('card', scene);
+    this.mesh = new BABYLON.Mesh('card');
 
     const { layerOptions1, layerOptions2 } = getLayersOptions(variant);
 
@@ -33,19 +33,18 @@ export class VCard {
     },
     backside = false
   ) {
-    const layerMaterial = new BABYLON.BackgroundMaterial(name, this.scene);
-    const layerTexture = new BABYLON.Texture(options.textureURL, this.scene);
+    const layerMaterial = new BABYLON.BackgroundMaterial(name);
+    const layerTexture = new BABYLON.Texture(options.textureURL);
 
     layerTexture.hasAlpha = true; // enable transparency
 
     layerMaterial.diffuseTexture = layerTexture;
     layerMaterial.backFaceCulling = false;
 
-    const layer = BABYLON.MeshBuilder.CreatePlane(
-      name,
-      { width: 1, height: 1 },
-      this.scene
-    );
+    const layer = BABYLON.MeshBuilder.CreatePlane(name, {
+      width: 1,
+      height: 1,
+    });
     layer.material = layerMaterial;
     layer.parent = this.mesh;
 
@@ -69,14 +68,10 @@ export class VCard {
     layerTexture.onLoadObservable.addOnce((eventData) => {
       const layerTextureSize = layerTexture.getSize();
 
-      const newPlane = BABYLON.MeshBuilder.CreatePlane(
-        `${name}_new`,
-        {
-          width: layerTextureSize.width / 500,
-          height: layerTextureSize.height / 500,
-        },
-        this.scene
-      );
+      const newPlane = BABYLON.MeshBuilder.CreatePlane(`${name}_new`, {
+        width: layerTextureSize.width / 500,
+        height: layerTextureSize.height / 500,
+      });
       layer._geometry = newPlane.geometry;
       newPlane._geometry = null;
       newPlane.dispose();
@@ -94,11 +89,10 @@ export class VCard {
     position: BABYLON.Vector3,
     size = 1
   ) {
-    const dynamicTexture = new BABYLON.DynamicTexture(
-      `${name}Texture`,
-      { width: 512, height: 256 },
-      this.scene
-    );
+    const dynamicTexture = new BABYLON.DynamicTexture(`${name}Texture`, {
+      width: 512,
+      height: 256,
+    });
     const textureContext =
       dynamicTexture.getContext() as CanvasRenderingContext2D;
 
@@ -123,18 +117,14 @@ export class VCard {
     dynamicTexture.update();
     dynamicTexture.hasAlpha = true;
 
-    const textMaterial = new BABYLON.StandardMaterial(
-      `${name}Material`,
-      this.scene
-    );
+    const textMaterial = new BABYLON.StandardMaterial(`${name}Material`);
     textMaterial.diffuseTexture = dynamicTexture;
     textMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
 
-    const textPlane = BABYLON.MeshBuilder.CreatePlane(
-      name,
-      { width: size, height: size },
-      this.scene
-    );
+    const textPlane = BABYLON.MeshBuilder.CreatePlane(name, {
+      width: size,
+      height: size,
+    });
     textPlane.material = textMaterial;
     textPlane.parent = this.mesh;
     textPlane.position = position;
@@ -175,7 +165,7 @@ function getLayersOptions(variant: number) {
     bigFx: {
       additive: true,
       textureURL: 'https://undroop-assets.web.app/davinci/toc-nebula/oc.png',
-      scale: .75,
+      scale: 0.75,
       color: color.toHexString(),
     },
   };
