@@ -43,13 +43,24 @@ export class VCard {
         layer.rotation.y = Math.PI;
       }
 
-      layerTexture.onLoadObservable.addOnce(
-        (eventData) => {
-          const layerTextureSize = layerTexture.getSize();
-          layer.scaling.x = layerTextureSize.width / 500;
-          layer.scaling.y = layerTextureSize.height / 500;
-        }
-      )
+      layerTexture.onLoadObservable.addOnce((eventData) => {
+        const layerTextureSize = layerTexture.getSize();
+
+        const newPlane = BABYLON.MeshBuilder.CreatePlane(
+          `${name}_new`,
+          {
+            width: layerTextureSize.width / 500,
+            height: layerTextureSize.height / 500,
+          },
+          scene
+        );
+        layer._geometry = newPlane.geometry;
+        newPlane._geometry = null;
+        newPlane.dispose();
+
+        // layer.scaling.x = layerTextureSize.width / 500;
+        // layer.scaling.y = layerTextureSize.height / 500;
+      });
 
       return layer;
     };
@@ -72,7 +83,8 @@ export class VCard {
         { width: 512, height: 256 },
         scene
       );
-      const textureContext = dynamicTexture.getContext() as any;
+      const textureContext =
+        dynamicTexture.getContext() as CanvasRenderingContext2D;
 
       const dynamicTextureSize = dynamicTexture.getSize();
 
@@ -112,8 +124,8 @@ export class VCard {
       textPlane.position = position;
     };
 
-    createTextPlane('Card Title', 'title', new BABYLON.Vector3(0, 0.7, -0.01));
-    createTextPlane('10', 'power', new BABYLON.Vector3(0, -0.7, -0.01));
+    createTextPlane('Card Title', 'title', new BABYLON.Vector3(0, 0.7, -0.05));
+    createTextPlane('10', 'power', new BABYLON.Vector3(0, -0.7, -0.05));
   }
 }
 
@@ -128,6 +140,7 @@ const layerOptions1 = {
   blobFx: {
     additive: true,
     textureURL: 'https://undroop-assets.web.app/davinci/basic/blob.webp',
+    scale: 8,
   },
 };
 
@@ -142,10 +155,11 @@ const layerOptions2 = {
   blobFx: {
     additive: true,
     textureURL: 'https://undroop-assets.web.app/davinci/basic/blob.webp',
+    scale: 8,
   },
   bigFx: {
     additive: true,
     textureURL: 'https://public.cx/drimgar-poc/board/boardbg02.webp',
-    scale: 4,
+    scale: 2,
   },
 };
