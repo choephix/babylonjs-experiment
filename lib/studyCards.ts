@@ -5,7 +5,7 @@ import { VCard } from './VCard';
 const MAX_POSITION_RAND = 3.5;
 const EXTRA_CARDS_COUNT = 10;
 
-export function studyCards(scene: BABYLON.Scene) {
+export default  function studyCards(scene: BABYLON.Scene) {
   for (let i = 0; i < EXTRA_CARDS_COUNT; i++) {
     const variant = Math.floor(Math.random() * 500);
     const card = new VCard(scene, variant);
