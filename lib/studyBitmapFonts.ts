@@ -1,4 +1,4 @@
-import * as BABYLON from '@babylonjs/core';
+import * as BABYLON from 'babylonjs';
 
 const URL_FONT_PNG = 'https://pixijs.io/pixi-react/font/desyrel.png';
 const URL_FONT_XML = 'https://pixijs.io/pixi-react/font/desyrel.xml';
