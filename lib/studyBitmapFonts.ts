@@ -65,11 +65,13 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
     charTexture.vOffset =
       1 - (data.y + data.height) / fontTexture.getSize().height;
 
-    charTexture.hasAlpha = true;
+    //charTexture.hasAlpha = true;
 
     material.diffuseTexture = charTexture;
-    //material.opacityTexture = charTexture;
+    material.opacityTexture = charTexture;
     material.useAlphaFromDiffuseTexture = true;
+    material.emissiveColor = BABYLON.Color3.White();
+    material.backFaceCulling = false;
 
     const plane = BABYLON.MeshBuilder.CreatePlane(
       `plane-${char}`,
@@ -85,7 +87,7 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
   function createTextMeshes(text: string) {
     const meshes: BABYLON.Mesh[] = [];
 
-    let x = -10;
+    let x = -100;
     for (const char of text) {
       const unicode = char.charCodeAt(0).toString();
 
@@ -96,6 +98,7 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
         charMesh.setEnabled(true);
 
         charMesh.position.x = x + fontData[unicode].xoffset;
+        charMesh.position.y = -fontData[unicode].yoffset * .5;
         x += fontData[unicode].xadvance;
 
         meshes.push(charMesh);
