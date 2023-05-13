@@ -3,7 +3,8 @@ import './style.css';
 import 'babylonjs-loaders';
 import * as BABYLON from 'babylonjs';
 
-import { VCard } from './VCard';
+import { VCard } from './experiments/VCard';
+import { studyCards } from './experiments/studyCards';
 
 const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
 const engine = new BABYLON.Engine(canvas, true);
@@ -20,29 +21,8 @@ const createScene = () => {
   );
   camera.attachControl(canvas, true);
 
-  const MAX_POSITION_RAND = 3.5;
-
-  for (let i = 0; i < 10; i++) {
-    const variant = Math.floor(Math.random() * 500);
-    const card = new VCard(scene, variant);
-
-    // Assign random position
-    const posX = Math.random() * 2 * MAX_POSITION_RAND - MAX_POSITION_RAND; // random number between -5 and 5
-    const posY = Math.random() * 2 * MAX_POSITION_RAND - MAX_POSITION_RAND; // random number between -5 and 5
-    const posZ = Math.random() * 2 * MAX_POSITION_RAND; // random number between -5 and 5
-    card.mesh.position.set(posX, posY, posZ);
-
-    // Assign random size
-    // const size = Math.random() * 0.75 + 0.25; // random number between 0.25 and 1
-    // card.mesh.scaling.set(size, size, size);
-
-    //card.mesh.scaling.set(.5,.5,.5);
-
-    //card.mesh.rotation.y = Math.PI * Math.random();
-  }
-
-  const card = new VCard(scene);
-
+  studyCards(scene);
+  
   return scene;
 };
 
