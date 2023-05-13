@@ -1,5 +1,16 @@
 import * as BABYLON from 'babylonjs';
 
+import { loremIpsum } from 'lorem-ipsum';
+
+function createTitle() {
+  return loremIpsum({
+    count: 1 + ~~(Math.random() * Math.random() * 9),
+    units: 'words',
+  })
+    .toLowerCase()
+    .replace(/\b[a-z](?=[a-z]{2})/g, (letter) => letter.toUpperCase());
+}
+
 export class VCard {
   mesh: BABYLON.Mesh;
 
@@ -9,21 +20,21 @@ export class VCard {
     const { layerOptions1, layerOptions2 } = getLayersOptions(variant);
 
     for (const [layerName, layerOptions] of Object.entries(layerOptions1)) {
-      this.createLayer(layerName, layerOptions);
+      this.addLayer(layerName, layerOptions);
     }
     for (const [layerName, layerOptions] of Object.entries(layerOptions2)) {
-      this.createLayer(layerName, layerOptions, true);
+      this.addLayer(layerName, layerOptions, true);
     }
 
-    this.createTextPlane(
-      'Card Title',
+    this.addTextPlane(
+      createTitle(),
       'title',
       new BABYLON.Vector3(0, 0.7, -0.05)
     );
-    this.createTextPlane('10', 'power', new BABYLON.Vector3(0, -0.7, -0.05), 2);
+    this.addTextPlane('10', 'power', new BABYLON.Vector3(0, -0.7, -0.05), 2);
   }
 
-  private createLayer(
+  private addLayer(
     name: string,
     options: {
       textureURL: string;
@@ -83,7 +94,7 @@ export class VCard {
     return layer;
   }
 
-  private createTextPlane(
+  private addTextPlane(
     text: string,
     name: string,
     position: BABYLON.Vector3,
