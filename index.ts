@@ -7,8 +7,10 @@ import { createBabylonScene } from './lib/createBabylonScene';
 function main() {
   const scene = createBabylonScene();
 
-  import('./lib/studyCards').then((ex) => ex.default(scene));
-  //import('./lib/studyBitmapFonts').then((ex) => ex.default(scene));
+  Object.assign(globalThis, { scene })
+
+  // import('./lib/studyCards').then((ex) => ex.default(scene));
+  import('./lib/studyBitmapFonts').then((ex) => ex.default(scene));
 }
 
 main();

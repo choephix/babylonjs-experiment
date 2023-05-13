@@ -9,11 +9,15 @@ export function createBabylonScene() {
     'camera',
     -Math.PI / 2,
     Math.PI / 2,
-    8,
+    80,
     BABYLON.Vector3.Zero(),
     scene
   );
   camera.attachControl(canvas, true);
+
+  engine.runRenderLoop(() => {
+    scene.render();
+  });
 
   window.addEventListener('resize', () => {
     engine.resize();

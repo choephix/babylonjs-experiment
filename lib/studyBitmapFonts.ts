@@ -75,16 +75,19 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
     );
 
     // Create a material for the character
-    const material = new BABYLON.StandardMaterial('charMaterial', scene);
+    const material = new BABYLON.StandardMaterial('charMaterial', scene);    
     plane.material = material;
 
     // Create a texture for the character
     const texture = new BABYLON.Texture(URL_FONT_PNG, scene);
     texture.hasAlpha = true;
     material.diffuseTexture = texture;
-
+    material.emissiveColor = BABYLON.Color3.White();
+   
     const textureWidth = fontTexture.getBaseSize().width;
     const textureHeight = fontTexture.getBaseSize().height;
+
+    return;
 
     // Set the UVs for the texture
     const uvs = new Float32Array([
@@ -106,6 +109,6 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
     plane.position.y = charData.yoffset;
 
     // Move the cursor to the next character
-    cursorX += charData.xadvance;
+    cursorX += charData.xadvance; 
   }
 }

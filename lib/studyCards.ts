@@ -25,6 +25,5 @@ export default  function studyCards(scene: BABYLON.Scene) {
         mesh.rotation.y += 0.01;
       }
     });
-    scene.render();
   });
 }
