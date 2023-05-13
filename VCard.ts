@@ -2,6 +2,8 @@ import * as BABYLON from 'babylonjs';
 
 import { loremIpsum } from 'lorem-ipsum';
 
+import html2canvas from 'html2canvas';
+
 function createTitle() {
   return loremIpsum({
     count: 1 + ~~(Math.random() * Math.random() * 9),
@@ -94,42 +96,19 @@ export class VCard {
     return layer;
   }
 
-  private addTextPlane(
+  private async addTextPlane(
     text: string,
     name: string,
     position: BABYLON.Vector3,
     size = 1
   ) {
-    const dynamicTexture = new BABYLON.DynamicTexture(`${name}Texture`, {
-      width: 512,
-      height: 256,
-    });
-    const textureContext =
-      dynamicTexture.getContext() as CanvasRenderingContext2D;
-
-    const dynamicTextureSize = dynamicTexture.getSize();
-
-    textureContext.clearRect(
-      0,
-      0,
-      dynamicTextureSize.width,
-      dynamicTextureSize.height
-    );
-    textureContext.font = 'bold 80px Arial';
-    textureContext.fillStyle = 'white';
-    textureContext.textAlign = 'center';
-    textureContext.textBaseline = 'middle';
-    textureContext.fillText(
-      text,
-      dynamicTextureSize.width / 2,
-      dynamicTextureSize.height / 2
-    );
-
-    dynamicTexture.update();
-    dynamicTexture.hasAlpha = true;
+    const div = document.createElement('div');
+    div.style.background = 'red';
+    div.innerText = text;
+    const texture = await createTextureFromDiv(this.scene, div);
 
     const textMaterial = new BABYLON.StandardMaterial(`${name}Material`);
-    textMaterial.diffuseTexture = dynamicTexture;
+    textMaterial.diffuseTexture = texture;
     textMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
 
     const textPlane = BABYLON.MeshBuilder.CreatePlane(name, {
@@ -187,3 +166,27 @@ function getLayersOptions(variant: number) {
 type _LayersOptions = ReturnType<typeof getLayersOptions>['layerOptions1'] &
   ReturnType<typeof getLayersOptions>['layerOptions2'];
 type LayerOptions = _LayersOptions[keyof _LayersOptions];
+
+async function createTextureFromDiv(
+  scene: BABYLON.Scene,
+  div: HTMLDivElement
+): Promise<BABYLON.DynamicTexture> {
+  // Create a canvas from the div
+  const canvas = await html2canvas(div);
+
+  console.log({ width: canvas.width, height: canvas.height })
+
+  // Create a dynamic texture from the canvas
+  const texture = new BABYLON.DynamicTexture(
+    'dynamicTexture',
+    { width: canvas.width, height: canvas.height },
+    scene,
+    true
+  );
+  texture.getContext().drawImage(canvas, 0, 0);
+
+  // Don't forget to update the texture after drawing on it
+  texture.update(false);
+
+  return texture;
+}

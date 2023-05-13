@@ -6,7 +6,10 @@ import * as BABYLON from 'babylonjs';
 import { VCard } from './VCard';
 
 const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
-const engine = new BABYLON.Engine(canvas, true);
+const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true });
+
+const MAX_POSITION_RAND = 3.5;
+const EXTRA_CARDS_COUNT = 0; // 10
 
 const createScene = () => {
   const scene = new BABYLON.Scene(engine);
@@ -20,9 +23,7 @@ const createScene = () => {
   );
   camera.attachControl(canvas, true);
 
-  const MAX_POSITION_RAND = 3.5;
-
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < EXTRA_CARDS_COUNT; i++) {
     const variant = Math.floor(Math.random() * 500);
     const card = new VCard(scene, variant);
 
@@ -49,7 +50,7 @@ const createScene = () => {
 const scene = createScene();
 
 engine.runRenderLoop(() => {
-  scene.meshes.forEach(mesh => {
+  scene.meshes.forEach((mesh) => {
     if (mesh.name.startsWith('card')) {
       mesh.rotation.y += 0.01;
     }
