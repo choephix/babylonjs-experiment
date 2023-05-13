@@ -51,12 +51,70 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
 
   await assetsManager.loadAsync();
 
-  // ... now what?
-
-  // After parsing the font data...
   const fontTexture = imageTask.texture;
+  const fontCharacterPlanePrefabs = {} as Record<string, BABYLON.Mesh>;
+
+  for (const [char, data] of Object.entries(fontData)) {
+    const material = new BABYLON.StandardMaterial(`material-${char}`, scene);
+
+    // create a new texture for each character to be able to set unique uScale, vScale, uOffset, vOffset
+    const charTexture = new BABYLON.Texture(fontTexture.url, scene);
+    charTexture.uScale = data.width / fontTexture.getSize().width;
+    charTexture.vScale = data.height / fontTexture.getSize().height;
+    charTexture.uOffset = data.x / fontTexture.getSize().width;
+    charTexture.vOffset =
+      1 - (data.y + data.height) / fontTexture.getSize().height;
+
+    charTexture.hasAlpha = true;
+
+    material.diffuseTexture = charTexture;
+    //material.opacityTexture = charTexture;
+    material.useAlphaFromDiffuseTexture = true;
+
+    const plane = BABYLON.MeshBuilder.CreatePlane(
+      `plane-${char}`,
+      { width: data.width, height: data.height },
+      scene
+    );
+    plane.material = material;
+    plane.setEnabled(false); // We'll clone this mesh later, so we can disable the original.
+
+    fontCharacterPlanePrefabs[char] = plane;
+  }
+
+  function createTextMeshes(text: string) {
+    const meshes: BABYLON.Mesh[] = [];
+
+    let x = -10;
+    for (const char of text) {
+      const unicode = char.charCodeAt(0).toString();
+
+      if (fontCharacterPlanePrefabs[unicode]) {
+        const charMesh = fontCharacterPlanePrefabs[unicode].clone(
+          `clone-${unicode}`
+        );
+        charMesh.setEnabled(true);
+
+        charMesh.position.x = x + fontData[unicode].xoffset;
+        x += fontData[unicode].xadvance;
+
+        meshes.push(charMesh);
+      }
+    }
+
+    return meshes;
+  }
 
   const text = 'Hello, world!';
+  const textMeshes = createTextMeshes(text);
+
+  for (const mesh of textMeshes) {
+    scene.addMesh(mesh);
+  }
+}
+
+/**
+  // After parsing the font data...
 
   let cursorX = 0;
   for (let i = 0; i < text.length; i++) {
@@ -111,4 +169,5 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
     // Move the cursor to the next character
     cursorX += charData.xadvance; 
   }
-}
+
+ */

@@ -9,7 +9,7 @@ export function createBabylonScene() {
     'camera',
     -Math.PI / 2,
     Math.PI / 2,
-    80,
+    800,
     BABYLON.Vector3.Zero(),
     scene
   );
