@@ -57,27 +57,29 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
   for (const [char, data] of Object.entries(fontData)) {
     const material = new BABYLON.StandardMaterial(`material-${char}`, scene);
 
-    // create a new texture for each character to be able to set unique uScale, vScale, uOffset, vOffset
-    const charTexture = new BABYLON.Texture(fontTexture.url, scene);
-    charTexture.uScale = data.width / fontTexture.getSize().width;
-    charTexture.vScale = data.height / fontTexture.getSize().height;
-    charTexture.uOffset = data.x / fontTexture.getSize().width;
-    charTexture.vOffset =
-      1 - (data.y + data.height) / fontTexture.getSize().height;
-
-    //charTexture.hasAlpha = true;
-
-    material.diffuseTexture = charTexture;
-    material.opacityTexture = charTexture;
+    material.diffuseTexture = fontTexture;
+    material.opacityTexture = fontTexture;
     material.useAlphaFromDiffuseTexture = true;
     material.emissiveColor = BABYLON.Color3.White();
     material.backFaceCulling = false;
 
+    const u0 = data.x / fontTexture.getSize().width;
+    const v0 = 1 - (data.y + data.height) / fontTexture.getSize().height;
+    const u1 = (data.x + data.width) / fontTexture.getSize().width;
+    const v1 = 1 - data.y / fontTexture.getSize().height;
+    
     const plane = BABYLON.MeshBuilder.CreatePlane(
       `plane-${char}`,
       { width: data.width, height: data.height },
       scene
     );
+
+    plane.setVerticesData(
+      BABYLON.VertexBuffer.UVKind,
+      [u0, v0, u1, v0, u1, v1, u0, v1],
+      true
+    );
+
     plane.material = material;
     plane.setEnabled(false); // We'll clone this mesh later, so we can disable the original.
 
@@ -115,62 +117,3 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
     scene.addMesh(mesh);
   }
 }
-
-/**
-  // After parsing the font data...
-
-  let cursorX = 0;
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const charData = fontData[char.charCodeAt(0)];
-
-    // Create a plane for the character
-    const plane = BABYLON.MeshBuilder.CreatePlane(
-      'charPlane',
-      {
-        width: charData.width,
-        height: charData.height,
-        updatable: true,
-      },
-      scene
-    );
-
-    // Create a material for the character
-    const material = new BABYLON.StandardMaterial('charMaterial', scene);    
-    plane.material = material;
-
-    // Create a texture for the character
-    const texture = new BABYLON.Texture(URL_FONT_PNG, scene);
-    texture.hasAlpha = true;
-    material.diffuseTexture = texture;
-    material.emissiveColor = BABYLON.Color3.White();
-   
-    const textureWidth = fontTexture.getBaseSize().width;
-    const textureHeight = fontTexture.getBaseSize().height;
-
-    return;
-
-    // Set the UVs for the texture
-    const uvs = new Float32Array([
-      charData.x / textureWidth,
-      charData.y / textureHeight,
-      (charData.x + charData.width) / textureWidth,
-      charData.y / textureHeight,
-      charData.x / textureWidth,
-      (charData.y + charData.height) / textureHeight,
-      (charData.x + charData.width) / textureWidth,
-      (charData.y + charData.height) / textureHeight,
-    ]);
-    const vertexData = new BABYLON.VertexData();
-    vertexData.uvs = uvs;
-    vertexData.applyToMesh(plane, true);
-
-    // Position the plane
-    plane.position.x = cursorX + charData.xoffset;
-    plane.position.y = charData.yoffset;
-
-    // Move the cursor to the next character
-    cursorX += charData.xadvance; 
-  }
-
- */
