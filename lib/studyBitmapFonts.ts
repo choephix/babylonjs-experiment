@@ -107,7 +107,7 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
   function createTextMeshes(text: string) {
     const meshes: BABYLON.Mesh[] = [];
 
-    let x = -100;
+    let x = -0;
     for (const char of text) {
       const unicode = char.charCodeAt(0).toString();
 
@@ -131,7 +131,11 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
   const text = 'Hello, world!';
   const textMeshes = createTextMeshes(text);
 
+  const container = new BABYLON.Mesh('container');
   for (const mesh of textMeshes) {
-    scene.addMesh(mesh);
+    mesh.parent = container;
   }
+
+  container.scaling.setAll(.005)
+  container.position.z = -1
 }

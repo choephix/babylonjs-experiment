@@ -9,7 +9,7 @@ function main() {
 
   Object.assign(globalThis, { scene })
 
-  // import('./lib/studyCards').then((ex) => ex.default(scene));
+  import('./lib/studyCards').then((ex) => ex.default(scene));
   import('./lib/studyBitmapFonts').then((ex) => ex.default(scene));
 }
 
