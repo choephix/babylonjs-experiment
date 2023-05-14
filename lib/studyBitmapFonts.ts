@@ -21,6 +21,8 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
     const xadvance = parseInt(charElement.getAttribute('xadvance'), 10);
     const xoffset = parseInt(charElement.getAttribute('xoffset'), 10);
     const yoffset = parseInt(charElement.getAttribute('yoffset'), 10);
+    const page = parseInt(charElement.getAttribute('page'), 10);
+    const letter = parseInt(charElement.getAttribute('letter'), 10);
     return {
       id,
       x,
@@ -30,6 +32,8 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
       xadvance,
       xoffset,
       yoffset,
+      page,
+      letter
     };
   }
 
@@ -96,7 +100,7 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
 
   for (const [char, data] of Object.entries(fontData)) {
     const plane = createGlyphPlane(data);
-    // plane.setEnabled(false); // We'll clone this mesh later, so we can disable the original.
+    plane.setEnabled(false); // We'll clone this mesh later, so we can disable the original.
     fontCharacterPlanePrefabs[char] = plane;
   }
 
