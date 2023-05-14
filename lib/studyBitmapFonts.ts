@@ -6,11 +6,14 @@ const URL_FONT_XML = 'https://pixijs.io/pixi-react/font/desyrel.xml';
 export default async function studyBitmapFonts(scene: BABYLON.Scene) {
   console.log(`studyBitmapFonts`);
 
+  const fontName = 'desyrel';
+
   const assetsManager = new BABYLON.AssetsManager(scene);
   const imageTask = assetsManager.addTextureTask('font img task', URL_FONT_PNG);
   const xmlTask = assetsManager.addTextFileTask('font xml task', URL_FONT_XML);
 
   function extractCharData(charElement: Element) {
+    const id = charElement.getAttribute('id');
     const x = parseInt(charElement.getAttribute('x'), 10);
     const y = parseInt(charElement.getAttribute('y'), 10);
     const width = parseInt(charElement.getAttribute('width'), 10);
@@ -19,6 +22,7 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
     const xoffset = parseInt(charElement.getAttribute('xoffset'), 10);
     const yoffset = parseInt(charElement.getAttribute('yoffset'), 10);
     return {
+      id,
       x,
       y,
       width,
@@ -53,25 +57,30 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
 
   const fontTexture = imageTask.texture;
   const fontCharacterPlanePrefabs = {} as Record<string, BABYLON.Mesh>;
+  const fontMaterial = new BABYLON.StandardMaterial(
+    `font-material-${fontName}`,
+    scene
+  );
+  fontMaterial.diffuseTexture = fontTexture;
+  fontMaterial.opacityTexture = fontTexture;
+  fontMaterial.useAlphaFromDiffuseTexture = true;
+  fontMaterial.emissiveColor = BABYLON.Color3.White();
+  fontMaterial.backFaceCulling = false;
 
-  for (const [char, data] of Object.entries(fontData)) {
-    const material = new BABYLON.StandardMaterial(`material-${char}`, scene);
+  function createGlyphPlane(data: CharData) {
+    const { width: textureWidth, height: textureHeight } =
+      fontTexture.getSize();
+    const { id, x, y, width, height } = data;
 
-    material.diffuseTexture = fontTexture;
-    material.opacityTexture = fontTexture;
-    material.useAlphaFromDiffuseTexture = true;
-    material.emissiveColor = BABYLON.Color3.White();
-    material.backFaceCulling = false;
+    const u0 = x / textureWidth;
+    const v0 = 1 - (y + height) / textureHeight;
+    const u1 = (x + width) / textureWidth;
+    const v1 = 1 - y / textureHeight;
 
-    const u0 = data.x / fontTexture.getSize().width;
-    const v0 = 1 - (data.y + data.height) / fontTexture.getSize().height;
-    const u1 = (data.x + data.width) / fontTexture.getSize().width;
-    const v1 = 1 - data.y / fontTexture.getSize().height;
-    
     const plane = BABYLON.MeshBuilder.CreatePlane(
-      `plane-${char}`,
-      { width: data.width, height: data.height },
-      scene
+      `plane-${id}`,
+      { width, height },
+      null
     );
 
     plane.setVerticesData(
@@ -80,9 +89,14 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
       true
     );
 
-    plane.material = material;
-    plane.setEnabled(false); // We'll clone this mesh later, so we can disable the original.
+    plane.material = fontMaterial;
 
+    return plane;
+  }
+
+  for (const [char, data] of Object.entries(fontData)) {
+    const plane = createGlyphPlane(data);
+    // plane.setEnabled(false); // We'll clone this mesh later, so we can disable the original.
     fontCharacterPlanePrefabs[char] = plane;
   }
 
@@ -100,7 +114,7 @@ export default async function studyBitmapFonts(scene: BABYLON.Scene) {
         charMesh.setEnabled(true);
 
         charMesh.position.x = x + fontData[unicode].xoffset;
-        charMesh.position.y = -fontData[unicode].yoffset * .5;
+        charMesh.position.y = -fontData[unicode].yoffset * 0.5;
         x += fontData[unicode].xadvance;
 
         meshes.push(charMesh);
